@@ -46,7 +46,13 @@ $stack->push(new JwtMiddleware($jwtManager));
 $client = new Client(['handler' => $stack, 'base_uri' => $baseUri]);
 
 $response = $client->get('/api/ping');
-var_dump((string) $response->getBody());
+
+try {
+    $response = $client->get('/api/ping');
+    echo($response->getBody());
+} catch (TransferException $e) {
+    echo $e->getMessage();
+}
 
 //response
 //{"data":"pong"}
