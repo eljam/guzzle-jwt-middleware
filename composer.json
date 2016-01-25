@@ -1,0 +1,35 @@
+{
+    "name": "eljam/guzzle-jwt-middleware",
+    "description": "A jwt authentication middleware for guzzle 6",
+    "keywords": ["guzzle", "guzzle6", "jwt", "auth", "http", "psr7", "handler", "middleware"],
+    "homepage": "https://github.com/eljam/guzzle-jwt-middleware",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Guillaume Cavana",
+            "email": "guillaume.cavana@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Eljam\\GuzzleJwt\\" : ["src/", "Tests/"]
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.5",
+        "satooshi/php-coveralls": "^0.6.1"
+    },
+    "require": {
+        "php" : ">=5.5.0",
+        "guzzlehttp/guzzle": "~6.0",
+        "symfony/options-resolver": "^3.0"
+    },
+    "config": {
+        "bin-dir" : "bin/"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        }
+    }
+}
