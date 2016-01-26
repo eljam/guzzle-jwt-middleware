@@ -5,6 +5,7 @@ namespace Eljam\GuzzleJwt\Manager;
 use Eljam\GuzzleJwt\JwtToken;
 use Eljam\GuzzleJwt\Strategy\Auth\AuthStrategyInterface;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -12,8 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class JwtManager
 {
-    const TIMEOUT = 1;
-
     /**
      * $client Guzzle Client.
      *
@@ -53,9 +52,10 @@ class JwtManager
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
             'token_url' => '/token',
+            'timeout' => 1,
         ]);
 
-        $resolver->setRequired(['token_url']);
+        $resolver->setRequired(['token_url', 'timeout']);
 
         $this->options = $resolver->resolve($options);
     }
@@ -70,8 +70,8 @@ class JwtManager
         $url = $this->options['token_url'];
 
         $requestOptions = array_merge(
-            $this->getHeaders(),
-            $this->auth->getGuzzleRequestOptions()
+            $this->getDefautHeaders(),
+            $this->auth->getRequestOptions()
         );
 
         $response = $this->client->request('POST', $url, $requestOptions);
@@ -85,12 +85,11 @@ class JwtManager
      *
      * @return array
      */
-    private function getHeaders()
+    private function getDefautHeaders()
     {
         return [
             \GuzzleHttp\RequestOptions::HEADERS => [
-                'content-type' => 'application/json',
-                'timeout' => self::TIMEOUT,
+                'timeout' => $this->options['timeout'],
             ],
         ];
     }

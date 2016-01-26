@@ -7,38 +7,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * @author Guillaume Cavana <guillaume.cavana@gmail.com>
  */
-class FormAuthStrategy implements AuthStrategyInterface
+class FormAuthStrategy extends AbstractBaseAuthStrategy
 {
     /**
-     * $options.
-     *
-     * @var array
+     * {@inheritdoc}
      */
-    protected $options;
-
-    /**
-     * Constructor.
-     *
-     * @param array $options
-     */
-    public function __construct(array $options = array())
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver = new OptionsResolver();
+        parent::configureOptions($resolver);
+
         $resolver->setDefaults([
-            'username' => '',
-            'password' => '',
             'form_fields' => ['_username', '_password'],
         ]);
 
-        $resolver->setRequired(['form_fields', 'username', 'password']);
-
-        $this->options = $resolver->resolve($options);
+        $resolver->setRequired(['form_fields']);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getGuzzleRequestOptions()
+    public function getRequestOptions()
     {
         return [
             \GuzzleHttp\RequestOptions::FORM_PARAMS => [

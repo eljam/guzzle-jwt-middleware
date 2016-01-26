@@ -2,12 +2,14 @@
 
 [![Build Status](https://img.shields.io/travis/eljam/guzzle-jwt-middleware.svg?branch=master&style=flat-square)](https://travis-ci.org/eljam/guzzle-jwt-middleware) [![Code Quality](https://img.shields.io/scrutinizer/g/eljam/guzzle-jwt-middleware.svg?b=master&style=flat-square)](https://scrutinizer-ci.com/g/eljam/guzzle-jwt-middleware/?branch=master) [![Code Coverage](https://img.shields.io/coveralls/eljam/guzzle-jwt-middleware.svg?style=flat-square)](https://coveralls.io/r/eljam/guzzle-jwt-middleware) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/87bbdd85-2cd8-4556-94c6-5ed9f501cf7d/mini.png)](https://insight.sensiolabs.com/projects/87bbdd85-2cd8-4556-94c6-5ed9f501cf7d) [![Latest Unstable Version](https://poser.pugx.org/eljam/guzzle-jwt-middleware/v/unstable)](https://packagist.org/packages/eljam/guzzle-jwt-middleware)
 [![Latest Stable Version](https://poser.pugx.org/eljam/guzzle-jwt-middleware/v/stable)](https://packagist.org/packages/eljam/guzzle-jwt-middleware)
+[![Downloads](https://img.shields.io/packagist/dt/eljam/guzzle-jwt-middleware.svg)
+[![license](https://img.shields.io/packagist/l/eljam/guzzle-jwt-middleware.svg)
 
 ## Installation
 
 `composer require eljam/guzzle-jwt-middleware`
 
-## How to
+## Usage
 
 ```php
 <?php
@@ -45,8 +47,6 @@ $stack->push(new JwtMiddleware($jwtManager));
 
 $client = new Client(['handler' => $stack, 'base_uri' => $baseUri]);
 
-$response = $client->get('/api/ping');
-
 try {
     $response = $client->get('/api/ping');
     echo($response->getBody());
@@ -58,4 +58,51 @@ try {
 //{"data":"pong"}
 
 ```
- 
+
+## Auth Strategies
+
+### QueryAuthStrategy
+
+```php
+$authStrategy = new QueryAuthStrategy(
+    [
+        'username' => 'admin',
+        'password' => 'admin',
+        'query_fields' => ['username', 'password'],
+    ]
+);
+```
+
+### FormAuthStrategy
+
+```php
+$authStrategy = new FormAuthStrategy(
+    [
+        'username' => 'admin',
+        'password' => 'admin',
+        'form_fields' => ['username', 'password'],
+    ]
+);
+```
+
+### HttpBasicAuthStrategy
+
+```php
+$authStrategy = new HttpBasicAuthStrategy(
+    [
+        'username' => 'admin',
+        'password' => 'password',
+    ]
+);
+```
+
+#Important
+
+This libray assumed that you have in your json response to get your token something like this:
+
+```json
+{
+token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyJ9...
+}
+```
+

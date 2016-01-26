@@ -2,35 +2,15 @@
 
 namespace Eljam\GuzzleJwt\Strategy\Auth;
 
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
 /**
  * @author Guillaume Cavana <guillaume.cavana@gmail.com>
  */
-class HttpBasicAuthStrategy implements AuthStrategyInterface
+class HttpBasicAuthStrategy extends AbstractBaseAuthStrategy
 {
-    /**
-     * Constructor.
-     *
-     * @param array $options
-     */
-    public function __construct(array $options = array())
-    {
-        $resolver = new OptionsResolver();
-        $resolver->setDefaults([
-            'username' => '',
-            'password' => '',
-        ]);
-
-        $resolver->setRequired(['username', 'password']);
-
-        $this->options = $resolver->resolve($options);
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function getGuzzleRequestOptions()
+    public function getRequestOptions()
     {
         return [
             \GuzzleHttp\RequestOptions::AUTH => [

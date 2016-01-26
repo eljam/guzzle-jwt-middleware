@@ -8,9 +8,9 @@ namespace Eljam\GuzzleJwt\Strategy\Auth;
 interface AuthStrategyInterface
 {
     /**
-     * getGuzzleRequestOptions.
+     * getRequestOptions.
      *
      * @return array
      */
-    public function getGuzzleRequestOptions();
+    public function getRequestOptions();
 }
