@@ -1,6 +1,6 @@
 <?php
 
-namespace Eljam\GuzzleJwt\Tests;
+namespace Eljam\GuzzleJwt\Tests\Manager;
 
 use Eljam\GuzzleJwt\JwtToken;
 use Eljam\GuzzleJwt\Manager\JwtManager;

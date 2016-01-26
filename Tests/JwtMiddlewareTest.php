@@ -8,7 +8,6 @@ use Eljam\GuzzleJwt\Strategy\Auth\HttpBasicAuthStrategy;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Promise\FulfilledPromise;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 
@@ -27,7 +26,7 @@ class JwtMiddlewareTest extends \PHPUnit_Framework_TestCase
                 200,
                 ['Content-Type' => 'application/json'],
                 json_encode(['token' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'])
-            )
+            ),
         ]);
 
         $authClient = new Client(['handler' => $authMockHandler]);
@@ -45,7 +44,7 @@ class JwtMiddlewareTest extends \PHPUnit_Framework_TestCase
                 );
 
                 return new Response(200, [], json_encode(['data' => 'pong']));
-            }
+            },
         ]);
 
         $handler = HandlerStack::create($mockHandler);

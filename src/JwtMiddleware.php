@@ -13,13 +13,6 @@ class JwtMiddleware
     const AUTH_BEARER = 'Bearer %s';
 
     /**
-     * $token.
-     *
-     * @var JwtToken
-     */
-    protected $token;
-
-    /**
      * $JwtManager.
      *
      * @var JwtManager
@@ -54,9 +47,10 @@ class JwtMiddleware
             $handler,
             $token
         ) {
-            $request = $request->withHeader('Authorization', sprintf(self::AUTH_BEARER, $token));
-
-            return $handler($request, $options);
+            return $handler($request->withHeader(
+                'Authorization',
+                sprintf(self::AUTH_BEARER, $token)
+            ), $options);
         };
     }
 }
