@@ -17,7 +17,7 @@ class JwtMiddleware
      *
      * @var JwtManager
      */
-    protected $JwtManager;
+    protected $jwtManager;
 
     /**
      * Constructor.
@@ -34,7 +34,7 @@ class JwtMiddleware
      *
      * @param callable $handler
      *
-     * @return Closure
+     * @return callable
      */
     public function __invoke(callable $handler)
     {

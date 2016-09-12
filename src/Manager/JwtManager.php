@@ -35,6 +35,13 @@ class JwtManager
     protected $options;
 
     /**
+     * $token.
+     *
+     * @var JwtToken
+     */
+    protected $token;
+
+    /**
      * Constructor.
      *
      * @param ClientInterface       $client
@@ -68,6 +75,10 @@ class JwtManager
      */
     public function getJwtToken()
     {
+        if ($this->token && $this->token->isValid()) {
+            return $this->token;
+        }
+
         $url = $this->options['token_url'];
 
         $requestOptions = array_merge(
@@ -78,7 +89,15 @@ class JwtManager
         $response = $this->client->request('POST', $url, $requestOptions);
         $body = json_decode($response->getBody(), true);
 
-        return new JwtToken($body[$this->options['token_key']]);
+        if (isset($body['expires_in'])) {
+            $expiration = new \DateTime('now + ' . $body['expires_in'] . ' seconds');
+        } else {
+            $expiration = null;
+        }
+
+        $this->token = new JwtToken($body[$this->options['token_key']], $expiration);
+
+        return $this->token;
     }
 
     /**

@@ -27,7 +27,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($request->hasHeader('timeout'));
                 $this->assertEquals(
                     3,
-                    $request->getHeader('timeout')[0]
+                    $request->getHeaderLine('timeout')
                 );
 
                 return new Response(
@@ -65,7 +65,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
                 $this->assertTrue($request->hasHeader('timeout'));
                 $this->assertEquals(
                     3,
-                    $request->getHeader('timeout')[0]
+                    $request->getHeaderLine('timeout')
                 );
 
                 return new Response(
@@ -89,6 +89,124 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
             $authStrategy,
             ['token_url' => '/api/token', 'timeout' => 3, 'token_key' => 'tokenkey']
         );
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('1453720507', $token->getToken());
+    }
+
+    public function testGetTokenShouldGetNewTokenIfCachedTokenIsNotValid()
+    {
+        $mockHandler = new MockHandler(
+            [
+                function (RequestInterface $request) {
+
+                    $this->assertTrue($request->hasHeader('timeout'));
+                    $this->assertEquals(
+                        3,
+                        $request->getHeaderLine('timeout')
+                    );
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'application/json'],
+                        json_encode(['token' => '1453720507'])
+                    );
+                },
+                function (RequestInterface $request) {
+
+                    $this->assertTrue($request->hasHeader('timeout'));
+                    $this->assertEquals(
+                        3,
+                        $request->getHeaderLine('timeout')
+                    );
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'application/json'],
+                        json_encode(['token' => 'foo123'])
+                    );
+                },
+            ]
+        );
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            ['token_url' => '/api/token', 'timeout' => 3]
+        );
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('1453720507', $token->getToken());
+
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('foo123', $token->getToken());
+    }
+
+    public function testGetTokenShouldUseTheCachedTokenIfItIsValid()
+    {
+        $mockHandler = new MockHandler(
+            [
+                function (RequestInterface $request) {
+
+                    $this->assertTrue($request->hasHeader('timeout'));
+                    $this->assertEquals(
+                        3,
+                        $request->getHeaderLine('timeout')
+                    );
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'application/json'],
+                        json_encode(['token' => '1453720507', 'expires_in' => 3600])
+                    );
+                },
+                function (RequestInterface $request) {
+
+                    $this->assertTrue($request->hasHeader('timeout'));
+                    $this->assertEquals(
+                        3,
+                        $request->getHeaderLine('timeout')
+                    );
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'application/json'],
+                        json_encode(['token' => 'foo123'])
+                    );
+                },
+            ]
+        );
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            ['token_url' => '/api/token', 'timeout' => 3]
+        );
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('1453720507', $token->getToken());
+
         $token = $jwtManager->getJwtToken();
 
         $this->assertInstanceOf(JwtToken::class, $token);
