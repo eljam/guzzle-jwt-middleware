@@ -106,11 +106,23 @@ $authStrategy = new HttpBasicAuthStrategy(
 
 #Important
 
-This libray assumed that you have in your json response to get your token something like this:
+By default this library assumes your json response has a key `token`, something like this:
 
-```json
+```javascript
 {
-token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyJ9...
+    token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyJ9..."
 }
 ```
 
+To change the key you can define it in the JwtManager options:
+
+```php
+$jwtManager = new JwtManager(
+    $authClient,
+    $authStrategy,
+    [
+        'token_url' => '/api/token',
+        'token_key' => 'access_token'
+    ]
+);
+```
