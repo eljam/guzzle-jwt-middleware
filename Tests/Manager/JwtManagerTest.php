@@ -56,4 +56,42 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(JwtToken::class, $token);
         $this->assertEquals('1453720507', $token->getToken());
     }
+
+    public function testGetTokenWithTokenKeyOption()
+    {
+        $mockHandler = new MockHandler([
+            function (RequestInterface $request) {
+
+                $this->assertTrue($request->hasHeader('timeout'));
+                $this->assertEquals(
+                    3,
+                    $request->getHeader('timeout')[0]
+                );
+
+                return new Response(
+                    200,
+                    ['Content-Type' => 'application/json'],
+                    json_encode(['tokenkey' => '1453720507'])
+                );
+            },
+        ]);
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            ['token_url' => '/api/token', 'timeout' => 3, 'token_key' => 'tokenkey']
+        );
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('1453720507', $token->getToken());
+    }
 }

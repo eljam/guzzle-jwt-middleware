@@ -53,6 +53,7 @@ class JwtManager
         $resolver->setDefaults([
             'token_url' => '/token',
             'timeout' => 1,
+            'token_key' => 'token',
         ]);
 
         $resolver->setRequired(['token_url', 'timeout']);
@@ -70,14 +71,14 @@ class JwtManager
         $url = $this->options['token_url'];
 
         $requestOptions = array_merge(
-            $this->getDefautHeaders(),
+            $this->getDefaultHeaders(),
             $this->auth->getRequestOptions()
         );
 
         $response = $this->client->request('POST', $url, $requestOptions);
         $body = json_decode($response->getBody(), true);
 
-        return new JwtToken($body['token']);
+        return new JwtToken($body[$this->options['token_key']]);
     }
 
     /**
@@ -85,7 +86,7 @@ class JwtManager
      *
      * @return array
      */
-    private function getDefautHeaders()
+    private function getDefaultHeaders()
     {
         return [
             \GuzzleHttp\RequestOptions::HEADERS => [
