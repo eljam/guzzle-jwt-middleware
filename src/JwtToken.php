@@ -12,16 +12,23 @@ class JwtToken
      *
      * @var string
      */
-    protected $token;
+    private $token;
+
+    /**
+     * @var \DateTime
+     */
+    private $expiration;
 
     /**
      * Constructor.
      *
-     * @param string $token
+     * @param string    $token
+     * @param \DateTime $expiration
      */
-    public function __construct($token)
+    public function __construct($token, \DateTime $expiration = null)
     {
         $this->token = $token;
+        $this->expiration = $expiration;
     }
 
     /**
@@ -32,5 +39,17 @@ class JwtToken
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        if (!$this->expiration) {
+            return false;
+        }
+
+        return (new \DateTime()) < $this->expiration;
     }
 }
