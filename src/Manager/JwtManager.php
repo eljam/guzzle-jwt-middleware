@@ -61,6 +61,7 @@ class JwtManager
             'token_url' => '/token',
             'timeout' => 1,
             'token_key' => 'token',
+            'expire_key' => 'expires_in',
         ]);
 
         $resolver->setRequired(['token_url', 'timeout']);
@@ -89,8 +90,10 @@ class JwtManager
         $response = $this->client->request('POST', $url, $requestOptions);
         $body = json_decode($response->getBody(), true);
 
-        if (isset($body['expires_in'])) {
-            $expiration = new \DateTime('now + ' . $body['expires_in'] . ' seconds');
+        $expiresIn = isset($body[$this->options['expire_key']]) ? $body[$this->options['expire_key']] : null;
+
+        if ($expiresIn) {
+            $expiration = new \DateTime('now + ' . $expiresIn . ' seconds');
         } else {
             $expiration = null;
         }
