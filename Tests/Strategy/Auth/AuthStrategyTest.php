@@ -4,6 +4,7 @@ namespace Eljam\GuzzleJwt\Tests\Strategy\Auth;
 
 use Eljam\GuzzleJwt\Strategy\Auth\FormAuthStrategy;
 use Eljam\GuzzleJwt\Strategy\Auth\HttpBasicAuthStrategy;
+use Eljam\GuzzleJwt\Strategy\Auth\JsonAuthStrategy;
 use Eljam\GuzzleJwt\Strategy\Auth\QueryAuthStrategy;
 
 /**
@@ -66,5 +67,26 @@ class AuthStrategyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('admin', $authStrategy->getRequestOptions()['auth'][0]);
         $this->assertEquals('password', $authStrategy->getRequestOptions()['auth'][1]);
+    }
+
+    /**
+     * testJsonAuthStrategy.
+     */
+    public function testJsonAuthStrategy()
+    {
+        $authStrategy = new JsonAuthStrategy(
+            [
+                'username' => 'admin',
+                'password' => 'admin',
+                'form_fields' => ['login', 'password'],
+            ]
+        );
+
+        $this->assertTrue(array_key_exists('login', $authStrategy->getRequestOptions()['json']));
+
+        $this->assertTrue(array_key_exists('password', $authStrategy->getRequestOptions()['json']));
+
+        $this->assertEquals('admin', $authStrategy->getRequestOptions()['json']['login']);
+        $this->assertEquals('admin', $authStrategy->getRequestOptions()['json']['password']);
     }
 }
