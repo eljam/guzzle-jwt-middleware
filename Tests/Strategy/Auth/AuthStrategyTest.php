@@ -78,7 +78,7 @@ class AuthStrategyTest extends \PHPUnit_Framework_TestCase
             [
                 'username' => 'admin',
                 'password' => 'admin',
-                'form_fields' => ['login', 'password'],
+                'json_fields' => ['login', 'password'],
             ]
         );
 

@@ -17,10 +17,10 @@ class JsonAuthStrategy extends AbstractBaseAuthStrategy
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'form_fields' => ['_username', '_password'],
+            'json_fields' => ['_username', '_password'],
         ]);
 
-        $resolver->setRequired(['form_fields']);
+        $resolver->setRequired(['json_fields']);
     }
 
     /**
@@ -30,8 +30,8 @@ class JsonAuthStrategy extends AbstractBaseAuthStrategy
     {
         return [
             \GuzzleHttp\RequestOptions::JSON => [
-                $this->options['form_fields'][0] => $this->options['username'],
-                $this->options['form_fields'][1] => $this->options['password'],
+                $this->options['json_fields'][0] => $this->options['username'],
+                $this->options['json_fields'][1] => $this->options['password'],
             ],
         ];
     }

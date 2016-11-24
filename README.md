@@ -103,6 +103,17 @@ $authStrategy = new HttpBasicAuthStrategy(
     ]
 );
 ```
+### JsonAuthStrategy
+
+```php
+$authStrategy = new JsonAuthStrategy(
+    [
+        'username' => 'admin',
+        'password' => 'admin',
+        'json_fields' => ['username', 'password'],
+    ]
+);
+```
 
 ## Token key
 
