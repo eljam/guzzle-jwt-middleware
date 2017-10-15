@@ -38,15 +38,16 @@ class JwtMiddleware
      */
     public function __invoke(callable $handler)
     {
-        $token = $this->jwtManager->getJwtToken()->getToken();
+        $manager = $this->jwtManager;
 
         return function (
             RequestInterface $request,
             array $options
         ) use (
             $handler,
-            $token
+            $manager
         ) {
+            $token = $manager->getJwtToken()->getToken();
             return $handler($request->withHeader(
                 'Authorization',
                 sprintf(self::AUTH_BEARER, $token)

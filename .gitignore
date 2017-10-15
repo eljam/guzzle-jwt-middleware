@@ -3,3 +3,4 @@ composer.phar
 vendor/
 bin/*
 .php_cs.cache
+.idea/
