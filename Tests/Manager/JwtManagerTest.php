@@ -212,4 +212,67 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(JwtToken::class, $token);
         $this->assertEquals('1453720507', $token->getToken());
     }
+
+    public function testGetTokenShouldUseTheCachedTokenIfItIsValidBasedOnExpField()
+    {
+        $jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+            . '.eyJleHAiOiIzMjUwMzY4MDAwMCJ9'
+            . '.k4YJmJooaa9B4pAM_U8Pi-4ss6RdKFtj9iQqLIAndVA';
+
+        $mockHandler = new MockHandler(
+            [
+                function (RequestInterface $request) use ($jwtToken) {
+
+                    $this->assertTrue($request->hasHeader('timeout'));
+                    $this->assertEquals(
+                        3,
+                        $request->getHeaderLine('timeout')
+                    );
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'application/json'],
+                        json_encode(['token' => $jwtToken])
+                    );
+                },
+                function (RequestInterface $request) {
+
+                    $this->assertTrue($request->hasHeader('timeout'));
+                    $this->assertEquals(
+                        3,
+                        $request->getHeaderLine('timeout')
+                    );
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'application/json'],
+                        json_encode(['token' => uniqid('token', true)])
+                    );
+                },
+            ]
+        );
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            ['token_url' => '/api/token', 'timeout' => 3]
+        );
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals($jwtToken, $token->getToken());
+
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals($jwtToken, $token->getToken());
+    }
 }
