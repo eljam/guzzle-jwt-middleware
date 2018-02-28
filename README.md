@@ -138,6 +138,16 @@ $jwtManager = new JwtManager(
 );
 ```
 
+## Authorization Header Type
+
+Some endpoints use different Authorization header types (Bearer, JWT, etc...).
+
+The default is Bearer, but another type can be supplied in the middleware:
+
+```php
+$stack->push(new JwtMiddleware($jwtManager, 'JWT'));
+```
+
 ## Cached token
 
 To avoid too many calls between multiple request, there is a cache system.
