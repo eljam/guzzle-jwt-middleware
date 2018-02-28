@@ -10,8 +10,6 @@ use Psr\Http\Message\RequestInterface;
  */
 class JwtMiddleware
 {
-    const AUTH_BEARER = 'Bearer %s';
-
     /**
      * $JwtManager.
      *
@@ -20,13 +18,22 @@ class JwtMiddleware
     protected $jwtManager;
 
     /**
+     * The Authorization Header Type (defaults to Bearer)
+     *
+     * @var string
+     */
+    protected $authorizationHeaderType;
+
+    /**
      * Constructor.
      *
      * @param JwtManager $jwtManager
+     * @param string $authorizationHeaderType
      */
-    public function __construct(JwtManager $jwtManager)
+    public function __construct(JwtManager $jwtManager, $authorizationHeaderType = 'Bearer')
     {
         $this->jwtManager = $jwtManager;
+        $this->authorizationHeaderType = $authorizationHeaderType;
     }
 
     /**
@@ -48,9 +55,10 @@ class JwtMiddleware
             $manager
         ) {
             $token = $manager->getJwtToken()->getToken();
+
             return $handler($request->withHeader(
                 'Authorization',
-                sprintf(self::AUTH_BEARER, $token)
+                sprintf('%s %s', $this->authorizationHeaderType, $token)
             ), $options);
         };
     }
