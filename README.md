@@ -171,3 +171,5 @@ $jwtManager = new JwtManager(
         'expire_key' => 'expires_in', # default is expires_in if not set
     ]
 );
+
+The bundle natively supports the [exp field](https://tools.ietf.org/html/rfc7519.html#section-4.1.4) in the JWT payload.
