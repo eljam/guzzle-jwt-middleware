@@ -138,6 +138,16 @@ $jwtManager = new JwtManager(
 );
 ```
 
+## Authorization Header Type
+
+Some endpoints use different Authorization header types (Bearer, JWT, etc...).
+
+The default is Bearer, but another type can be supplied in the middleware:
+
+```php
+$stack->push(new JwtMiddleware($jwtManager, 'JWT'));
+```
+
 ## Cached token
 
 To avoid too many calls between multiple request, there is a cache system.
@@ -161,3 +171,5 @@ $jwtManager = new JwtManager(
         'expire_key' => 'expires_in', # default is expires_in if not set
     ]
 );
+
+The bundle natively supports the [exp field](https://tools.ietf.org/html/rfc7519.html#section-4.1.4) in the JWT payload.

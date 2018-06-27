@@ -94,6 +94,13 @@ class JwtManager
 
         if ($expiresIn) {
             $expiration = new \DateTime('now + ' . $expiresIn . ' seconds');
+        } elseif (count($jwtParts = explode('.', $body[$this->options['token_key']])) === 3
+            && is_array($payload = json_decode(base64_decode($jwtParts[1]), true))
+            // https://tools.ietf.org/html/rfc7519.html#section-4.1.4
+            && array_key_exists('exp', $payload)
+        ) {
+            // Manually process the payload part to avoid having to drag in a new library
+            $expiration = new \DateTime('@' . $payload['exp']);
         } else {
             $expiration = null;
         }
