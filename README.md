@@ -119,6 +119,60 @@ $authStrategy = new JsonAuthStrategy(
 );
 ```
 
+## Persistence
+
+To avoid requesting a token everytime php runs, you can pass to `JwtManager` an implementation of `TokenPersistenceInterface`.  
+By default `NullTokenPersistence` will be used.
+
+```php
+namespace App\Jwt\Persistence;
+
+use Eljam\GuzzleJwt\Persistence\TokenPersistenceInterface;
+
+class MyCustomPersistence implements TokenPersistenceInterface
+{
+    /**
+     * Save the token data.
+     *
+     * @param JwtToken $token
+     */
+    public function saveToken(JwtToken $token)
+    {
+        // Use APCu, Redis or whatever fits your needs.
+        return;
+    }
+
+    /**
+     * Retrieve the token from storage and return it.
+     * Return null if nothing is stored.
+     *
+     * @return JwtToken Restored token
+     */
+    public function restoreToken()
+    {
+        return null;
+    }
+
+    /**
+     * Delete the saved token data.
+     */
+    public function deleteToken()
+    {
+        return;
+    }
+
+    /**
+     * Returns true if a token exists (although it may not be valid)
+     *
+     * @return bool
+     */
+    public function hasToken()
+    {
+        return false;
+    }
+}
+```
+
 ## Token key
 
 By default this library assumes your json response has a key `token`, something like this:
