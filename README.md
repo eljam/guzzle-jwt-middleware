@@ -124,6 +124,48 @@ $authStrategy = new JsonAuthStrategy(
 To avoid requesting a token everytime php runs, you can pass to `JwtManager` an implementation of `TokenPersistenceInterface`.  
 By default `NullTokenPersistence` will be used.
 
+### Simpe cache adapter (PSR-16)
+
+If you have any [PSR-16 compatible cache](https://www.php-fig.org/psr/psr-16/), you can use it as a persistence handler:
+
+```php
+<?php
+
+use Eljam\GuzzleJwt\Persistence\SimpleCacheTokenPersistence;
+use Psr\SimpleCache\CacheInterface;
+
+/**
+ * @var CacheInterface
+ */
+$psr16cache;
+
+$persistenceStrategy = new SimpleCacheTokenPersistence($psr16cache);
+```
+
+Optionnally you can specify the TTL and cache key used:
+
+```php
+<?php
+
+use Eljam\GuzzleJwt\Persistence\SimpleCacheTokenPersistence;
+use Psr\SimpleCache\CacheInterface;
+
+/**
+ * @var CacheInterface
+ */
+$psr16cache;
+
+$ttl = 1800;
+$cacheKey = 'myUniqueKey';
+
+$persistenceStrategy = new SimpleCacheTokenPersistence($psr16cache, $ttl, $cacheKey);
+```
+
+
+### Custom persistence
+
+You may create you own persistence handler by implementing the `TokenPersistenceInterface`:
+
 ```php
 namespace App\Jwt\Persistence;
 
