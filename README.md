@@ -33,6 +33,9 @@ require_once 'vendor/autoload.php';
 //Create your auth strategy
 $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
 
+//Optionnal: create your persistence strategy
+$persistenceStrategy = null;
+
 $baseUri = 'http://api.example.org/';
 
 // Create authClient
@@ -42,6 +45,7 @@ $authClient = new Client(['base_uri' => $baseUri]);
 $jwtManager = new JwtManager(
     $authClient,
     $authStrategy,
+    $persistenceStrategy,
     [
         'token_url' => '/api/token',
     ]
@@ -131,6 +135,7 @@ but now you can change the token_key in the JwtManager options:
 $jwtManager = new JwtManager(
     $authClient,
     $authStrategy,
+    $persistenceStrategy,
     [
         'token_url' => '/api/token',
         'token_key' => 'access_token',
@@ -165,6 +170,7 @@ Json example:
 $jwtManager = new JwtManager(
     $authClient,
     $authStrategy,
+    $persistenceStrategy,
     [
         'token_url' => '/api/token',
         'token_key' => 'access_token',
