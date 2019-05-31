@@ -49,6 +49,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $jwtManager = new JwtManager(
             $authClient,
             $authStrategy,
+            null,
             ['token_url' => '/api/token', 'timeout' => 3]
         );
         $token = $jwtManager->getJwtToken();
@@ -87,6 +88,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $jwtManager = new JwtManager(
             $authClient,
             $authStrategy,
+            null,
             ['token_url' => '/api/token', 'timeout' => 3, 'token_key' => 'tokenkey']
         );
         $token = $jwtManager->getJwtToken();
@@ -141,6 +143,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $jwtManager = new JwtManager(
             $authClient,
             $authStrategy,
+            null,
             ['token_url' => '/api/token', 'timeout' => 3]
         );
         $token = $jwtManager->getJwtToken();
@@ -200,6 +203,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $jwtManager = new JwtManager(
             $authClient,
             $authStrategy,
+            null,
             ['token_url' => '/api/token', 'timeout' => 3]
         );
         $token = $jwtManager->getJwtToken();
@@ -263,6 +267,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
         $jwtManager = new JwtManager(
             $authClient,
             $authStrategy,
+            null,
             ['token_url' => '/api/token', 'timeout' => 3]
         );
         $token = $jwtManager->getJwtToken();
