@@ -3,6 +3,8 @@
 namespace Eljam\GuzzleJwt\Manager;
 
 use Eljam\GuzzleJwt\JwtToken;
+use Eljam\GuzzleJwt\Persistence\NullTokenPersistence;
+use Eljam\GuzzleJwt\Persistence\TokenPersistenceInterface;
 use Eljam\GuzzleJwt\Strategy\Auth\AuthStrategyInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\request;
@@ -42,19 +44,31 @@ class JwtManager
     protected $token;
 
     /**
+     * @var TokenPersistenceInterface
+     */
+    protected $tokenPersistence;
+
+    /**
      * Constructor.
      *
-     * @param ClientInterface       $client
-     * @param AuthStrategyInterface $auth
-     * @param array                 $options
+     * @param ClientInterface           $client
+     * @param AuthStrategyInterface     $auth
+     * @param TokenPersistenceInterface $tokenPersistence
+     * @param array                     $options
      */
     public function __construct(
         ClientInterface $client,
         AuthStrategyInterface $auth,
+        TokenPersistenceInterface $tokenPersistence = null,
         array $options = []
     ) {
         $this->client = $client;
         $this->auth = $auth;
+
+        if ($tokenPersistence === null) {
+            $tokenPersistence = new NullTokenPersistence();
+        }
+        $this->tokenPersistence = $tokenPersistence;
 
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
@@ -76,9 +90,16 @@ class JwtManager
      */
     public function getJwtToken()
     {
+        // If token is not set try to get it from the persistent storage.
+        if ($this->token === null) {
+            $this->token = $this->tokenPersistence->restoreToken();
+        }
+
         if ($this->token && $this->token->isValid()) {
             return $this->token;
         }
+
+        $this->tokenPersistence->deleteToken();
 
         $url = $this->options['token_url'];
 
@@ -106,6 +127,7 @@ class JwtManager
         }
 
         $this->token = new JwtToken($body[$this->options['token_key']], $expiration);
+        $this->tokenPersistence->saveToken($this->token);
 
         return $this->token;
     }

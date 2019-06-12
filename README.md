@@ -33,6 +33,9 @@ require_once 'vendor/autoload.php';
 //Create your auth strategy
 $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
 
+//Optionnal: create your persistence strategy
+$persistenceStrategy = null;
+
 $baseUri = 'http://api.example.org/';
 
 // Create authClient
@@ -42,6 +45,7 @@ $authClient = new Client(['base_uri' => $baseUri]);
 $jwtManager = new JwtManager(
     $authClient,
     $authStrategy,
+    $persistenceStrategy,
     [
         'token_url' => '/api/token',
     ]
@@ -115,6 +119,102 @@ $authStrategy = new JsonAuthStrategy(
 );
 ```
 
+## Persistence
+
+To avoid requesting a token everytime php runs, you can pass to `JwtManager` an implementation of `TokenPersistenceInterface`.  
+By default `NullTokenPersistence` will be used.
+
+### Simpe cache adapter (PSR-16)
+
+If you have any [PSR-16 compatible cache](https://www.php-fig.org/psr/psr-16/), you can use it as a persistence handler:
+
+```php
+<?php
+
+use Eljam\GuzzleJwt\Persistence\SimpleCacheTokenPersistence;
+use Psr\SimpleCache\CacheInterface;
+
+/**
+ * @var CacheInterface
+ */
+$psr16cache;
+
+$persistenceStrategy = new SimpleCacheTokenPersistence($psr16cache);
+```
+
+Optionnally you can specify the TTL and cache key used:
+
+```php
+<?php
+
+use Eljam\GuzzleJwt\Persistence\SimpleCacheTokenPersistence;
+use Psr\SimpleCache\CacheInterface;
+
+/**
+ * @var CacheInterface
+ */
+$psr16cache;
+
+$ttl = 1800;
+$cacheKey = 'myUniqueKey';
+
+$persistenceStrategy = new SimpleCacheTokenPersistence($psr16cache, $ttl, $cacheKey);
+```
+
+
+### Custom persistence
+
+You may create you own persistence handler by implementing the `TokenPersistenceInterface`:
+
+```php
+namespace App\Jwt\Persistence;
+
+use Eljam\GuzzleJwt\Persistence\TokenPersistenceInterface;
+
+class MyCustomPersistence implements TokenPersistenceInterface
+{
+    /**
+     * Save the token data.
+     *
+     * @param JwtToken $token
+     */
+    public function saveToken(JwtToken $token)
+    {
+        // Use APCu, Redis or whatever fits your needs.
+        return;
+    }
+
+    /**
+     * Retrieve the token from storage and return it.
+     * Return null if nothing is stored.
+     *
+     * @return JwtToken Restored token
+     */
+    public function restoreToken()
+    {
+        return null;
+    }
+
+    /**
+     * Delete the saved token data.
+     */
+    public function deleteToken()
+    {
+        return;
+    }
+
+    /**
+     * Returns true if a token exists (although it may not be valid)
+     *
+     * @return bool
+     */
+    public function hasToken()
+    {
+        return false;
+    }
+}
+```
+
 ## Token key
 
 By default this library assumes your json response has a key `token`, something like this:
@@ -131,6 +231,7 @@ but now you can change the token_key in the JwtManager options:
 $jwtManager = new JwtManager(
     $authClient,
     $authStrategy,
+    $persistenceStrategy,
     [
         'token_url' => '/api/token',
         'token_key' => 'access_token',
@@ -165,6 +266,7 @@ Json example:
 $jwtManager = new JwtManager(
     $authClient,
     $authStrategy,
+    $persistenceStrategy,
     [
         'token_url' => '/api/token',
         'token_key' => 'access_token',
