@@ -5,7 +5,8 @@ namespace Eljam\GuzzleJwt\Tests\Persistence;
 use Eljam\GuzzleJwt\JwtToken;
 use Eljam\GuzzleJwt\Persistence\NullTokenPersistence;
 use Eljam\GuzzleJwt\Persistence\SimpleCacheTokenPersistence;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Kodus\Cache\MockCache;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * @author Nicolas Reynis (nreynis)
@@ -27,11 +28,27 @@ class TokenPersistenceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * testSimpleCacheTokenPersistenceInterface.
+     * Makes sure we only use the interface methods.
+     */
+    public function testSimpleCacheTokenPersistenceInterface()
+    {
+        $simpleCache = $this->getMock(CacheInterface::class);
+        $tokenPersistence = new SimpleCacheTokenPersistence($simpleCache);
+        $token = new JwtToken('foo', new \DateTime('now'));
+
+        $this->assertNull($tokenPersistence->saveToken($token));
+        $this->assertNull($tokenPersistence->hasToken());
+        $this->assertNull($tokenPersistence->restoreToken());
+        $this->assertNull($tokenPersistence->deleteToken());
+    }
+
+    /**
      * testSimpleCacheTokenPersistence.
      */
     public function testSimpleCacheTokenPersistence()
     {
-        $simpleCache = new FilesystemCache();
+        $simpleCache = new MockCache();
         $tokenPersistence = new SimpleCacheTokenPersistence($simpleCache);
         $token = new JwtToken('foo', new \DateTime('now'));
 
