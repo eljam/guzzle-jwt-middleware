@@ -16,6 +16,123 @@ use Psr\Http\Message\RequestInterface;
  */
 class JwtManagerTest extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * testGetTokenExpiredKeyException
+     */
+    public function testGetTokenExpiredKeyException()
+    {
+        $mockHandler = new MockHandler([
+            function (RequestInterface $request) {
+
+                $this->assertTrue($request->hasHeader('timeout'));
+                $this->assertEquals(
+                    3,
+                    $request->getHeaderLine('timeout')
+                );
+
+        $jsonPayload = <<<EOF
+            {
+                "status": "success",
+                "message": "Login successful",
+                "payload": {
+                    "token": "1453720507"
+                },
+                "expires_in": 3600
+            }
+EOF;
+
+                return new Response(
+                    200,
+                    ['Content-Type' => 'application/json'],
+                    $jsonPayload
+                );
+            },
+        ]);
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            null,
+            [
+                'token_url' => '/api/token',
+                'timeout' => 3,
+                'token_key' => 'token',
+                'expire_key' => 'expires_in'
+            ]
+        );
+
+        $this->setExpectedException('Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException');
+
+        $token = $jwtManager->getJwtToken();
+    }
+
+    /**
+     * testGetTokenWithSublevelResponse
+     */
+    public function testGetTokenWithSublevelResponse()
+    {
+        $mockHandler = new MockHandler([
+            function (RequestInterface $request) {
+
+                $this->assertTrue($request->hasHeader('timeout'));
+                $this->assertEquals(
+                    3,
+                    $request->getHeaderLine('timeout')
+                );
+
+        $jsonPayload = <<<EOF
+            {
+                "status": "success",
+                "message": "Login successful",
+                "payload": {
+                    "token": "1453720507"
+                },
+                "expires_in": 3600
+            }
+EOF;
+
+                return new Response(
+                    200,
+                    ['Content-Type' => 'application/json'],
+                    $jsonPayload
+                );
+            },
+        ]);
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            null,
+            [
+                'token_url' => '/api/token',
+                'timeout' => 3,
+                'token_key' => 'payload.token',
+                'expire_key' => 'expires_in'
+            ]
+        );
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('1453720507', $token->getToken());
+    }
+
     /**
      * testGetToken.
      */
@@ -33,7 +150,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
                 return new Response(
                     200,
                     ['Content-Type' => 'application/json'],
-                    json_encode(['token' => '1453720507'])
+                    json_encode(['token' => '1453720507', 'expires_in' => 3600])
                 );
             },
         ]);

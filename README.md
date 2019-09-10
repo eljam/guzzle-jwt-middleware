@@ -121,7 +121,7 @@ $authStrategy = new JsonAuthStrategy(
 
 ## Persistence
 
-To avoid requesting a token everytime php runs, you can pass to `JwtManager` an implementation of `TokenPersistenceInterface`.  
+To avoid requesting a token everytime php runs, you can pass to `JwtManager` an implementation of `TokenPersistenceInterface`.
 By default `NullTokenPersistence` will be used.
 
 ### Simpe cache adapter (PSR-16)
@@ -217,6 +217,40 @@ class MyCustomPersistence implements TokenPersistenceInterface
 
 ## Token key
 
+
+### Property accessor
+
+With the property accessor you can point to a node in your json.
+
+Json Example:
+
+```javascript
+{
+    "status": "success",
+    "message": "Login successful",
+    "payload": {
+        "token": "1453720507"
+    },
+    "expires_in": 3600
+}
+```
+
+Library configuration:
+
+```php
+$jwtManager = new JwtManager(
+    $authClient,
+    $authStrategy,
+    $persistenceStrategy,
+    [
+        'token_url'  => '/api/token',
+        'token_key'  => 'payload.token',
+        'expire_key' => 'expires_in'
+    ]
+);
+```
+
+## Default behavior
 By default this library assumes your json response has a key `token`, something like this:
 
 ```javascript

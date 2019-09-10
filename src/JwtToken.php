@@ -15,7 +15,7 @@ class JwtToken
     private $token;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $expiration;
 

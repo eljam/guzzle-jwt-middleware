@@ -9,6 +9,9 @@ use Eljam\GuzzleJwt\Strategy\Auth\AuthStrategyInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
 /**
  * @author Guillaume Cavana <guillaume.cavana@gmail.com>
@@ -49,6 +52,12 @@ class JwtManager
     protected $tokenPersistence;
 
     /**
+     * $propertyAccessor.
+     *
+     * @var PropertyAccessor
+     */
+    protected $propertyAccessor;
+    /**
      * Constructor.
      *
      * @param ClientInterface           $client
@@ -81,6 +90,8 @@ class JwtManager
         $resolver->setRequired(['token_url', 'timeout']);
 
         $this->options = $resolver->resolve($options);
+
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     /**
@@ -95,7 +106,7 @@ class JwtManager
             $this->token = $this->tokenPersistence->restoreToken();
         }
 
-        if ($this->token && $this->token->isValid()) {
+        if ($this->token !== null && $this->token->isValid()) {
             return $this->token;
         }
 
@@ -109,13 +120,20 @@ class JwtManager
         );
 
         $response = $this->client->request('POST', $url, $requestOptions);
-        $body = json_decode($response->getBody(), true);
+        $body = json_decode($response->getBody());
 
-        $expiresIn = isset($body[$this->options['expire_key']]) ? $body[$this->options['expire_key']] : null;
+        //Will be throw because it's mandatory
+        $tokenValue = $this->propertyAccessor->getValue($body, $this->options['token_key']);
+
+        try {
+            $expiresIn = $this->propertyAccessor->getValue($body, $this->options['expire_key']);
+        } catch (NoSuchPropertyException $e) {
+            $expiresIn = null;
+        }
 
         if ($expiresIn) {
             $expiration = new \DateTime('now + ' . $expiresIn . ' seconds');
-        } elseif (count($jwtParts = explode('.', $body[$this->options['token_key']])) === 3
+        } elseif (count($jwtParts = explode('.', $tokenValue)) === 3
             && is_array($payload = json_decode(base64_decode($jwtParts[1]), true))
             // https://tools.ietf.org/html/rfc7519.html#section-4.1.4
             && array_key_exists('exp', $payload)
@@ -126,7 +144,7 @@ class JwtManager
             $expiration = null;
         }
 
-        $this->token = new JwtToken($body[$this->options['token_key']], $expiration);
+        $this->token = new JwtToken($tokenValue, $expiration);
         $this->tokenPersistence->saveToken($this->token);
 
         return $this->token;

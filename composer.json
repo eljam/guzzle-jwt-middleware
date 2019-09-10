@@ -24,14 +24,15 @@
         "php" : ">=5.6.0",
         "guzzlehttp/guzzle": "~6.0",
         "psr/simple-cache": "^1.0",
-        "symfony/options-resolver": ">=2.8"
+        "symfony/options-resolver": ">=2.8",
+        "symfony/property-access":">=2.8"
     },
     "config": {
         "bin-dir" : "bin/"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.4-dev"
+            "dev-master": "0.7-dev"
         }
     }
 }
