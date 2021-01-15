@@ -14,7 +14,7 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @author Guillaume Cavavana <guillaume.cavana@gmail.com>
  */
-class JwtMiddlewareTest extends \PHPUnit_Framework_TestCase
+class JwtMiddlewareTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * testJwtAuthorizationHeader.

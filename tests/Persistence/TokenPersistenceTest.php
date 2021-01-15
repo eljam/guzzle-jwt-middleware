@@ -11,7 +11,7 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * @author Nicolas Reynis (nreynis)
  */
-class TokenPersistenceTest extends \PHPUnit_Framework_TestCase
+class TokenPersistenceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * testNullTokenPersistence.
@@ -33,7 +33,7 @@ class TokenPersistenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testSimpleCacheTokenPersistenceInterface()
     {
-        $simpleCache = $this->getMock(CacheInterface::class);
+        $simpleCache = $this->createMock(CacheInterface::class);
         $tokenPersistence = new SimpleCacheTokenPersistence($simpleCache);
         $token = new JwtToken('foo', new \DateTime('now'));
 

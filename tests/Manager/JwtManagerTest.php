@@ -14,7 +14,7 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @author Guillaume Cavavana <guillaume.cavana@gmail.com>
  */
-class JwtManagerTest extends \PHPUnit_Framework_TestCase
+class JwtManagerTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -31,7 +31,7 @@ class JwtManagerTest extends \PHPUnit_Framework_TestCase
                     $request->getHeaderLine('timeout')
                 );
 
-        $jsonPayload = <<<EOF
+                $jsonPayload = <<<EOF
             {
                 "status": "success",
                 "message": "Login successful",
@@ -70,7 +70,7 @@ EOF;
             ]
         );
 
-        $this->setExpectedException('Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException');
+        $this->expectException('Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException');
 
         $token = $jwtManager->getJwtToken();
     }
@@ -89,7 +89,7 @@ EOF;
                     $request->getHeaderLine('timeout')
                 );
 
-        $jsonPayload = <<<EOF
+                $jsonPayload = <<<EOF
             {
                 "status": "success",
                 "message": "Login successful",
