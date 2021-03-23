@@ -4,7 +4,7 @@ namespace Eljam\GuzzleJwt\Tests;
 
 use Eljam\GuzzleJwt\JwtToken;
 
-class JwtTokenTest extends \PHPUnit_Framework_TestCase
+class JwtTokenTest extends \PHPUnit\Framework\TestCase
 {
     public function testTokenShouldNotBeValidIfExpirationIsInThePast()
     {

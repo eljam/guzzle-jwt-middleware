@@ -10,7 +10,7 @@ use Eljam\GuzzleJwt\Strategy\Auth\QueryAuthStrategy;
 /**
  * @author Guillaume Cavavana <guillaume.cavana@gmail.com>
  */
-class AuthStrategyTest extends \PHPUnit_Framework_TestCase
+class AuthStrategyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * testFormAuthStrategy.
