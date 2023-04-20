@@ -50,6 +50,6 @@ class JwtToken
             return false;
         }
 
-        return (new \DateTime('now + 1 minutes')) < $this->expiration;
+        return (new \DateTime('now + 1 seconds')) < $this->expiration;
     }
 }
