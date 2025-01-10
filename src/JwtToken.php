@@ -25,7 +25,7 @@ class JwtToken
      * @param string    $token
      * @param \DateTime $expiration
      */
-    public function __construct($token, \DateTime $expiration = null)
+    public function __construct($token, ?\DateTime $expiration = null)
     {
         $this->token = $token;
         $this->expiration = $expiration;
