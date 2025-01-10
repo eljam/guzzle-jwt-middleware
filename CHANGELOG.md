@@ -18,3 +18,7 @@ Stable version !
 # 1.0.1
 
 Fix sipmple-cache requirements, thanks to @neclimdul
+
+# 2.0.0
+
+For PHP 8 only
