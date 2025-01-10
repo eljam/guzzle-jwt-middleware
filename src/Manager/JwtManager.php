@@ -68,7 +68,7 @@ class JwtManager
     public function __construct(
         ClientInterface $client,
         AuthStrategyInterface $auth,
-        TokenPersistenceInterface $tokenPersistence = null,
+        ?TokenPersistenceInterface $tokenPersistence = null,
         array $options = []
     ) {
         $this->client = $client;
