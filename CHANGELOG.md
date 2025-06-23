@@ -22,3 +22,7 @@ Fix sipmple-cache requirements, thanks to @neclimdul
 # 2.0.0
 
 For PHP 8 only
+
+# 2.1.0 ???
+
+Possibility to set the property accessor to null in order to support tokens returned in plain text format.

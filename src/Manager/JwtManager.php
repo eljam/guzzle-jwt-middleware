@@ -95,6 +95,14 @@ class JwtManager
     }
 
     /**
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessor|null $propertyAccessor
+     */
+    public function setPropertyAccessor(?PropertyAccessor $propertyAccessor): void
+    {
+        $this->propertyAccessor = $propertyAccessor;
+    }
+
+    /**
      * getToken.
      *
      * @return JwtToken
@@ -120,14 +128,21 @@ class JwtManager
         );
 
         $response = $this->client->request('POST', $url, $requestOptions);
-        $body = json_decode($response->getBody());
 
-        //Will be throw because it's mandatory
-        $tokenValue = $this->propertyAccessor->getValue($body, $this->options['token_key']);
+        if ($this->propertyAccessor !== null) {
+            $body = json_decode($response->getBody());
 
-        try {
-            $expiresIn = $this->propertyAccessor->getValue($body, $this->options['expire_key']);
-        } catch (NoSuchPropertyException $e) {
+            //Will be throw because it's mandatory
+            $tokenValue = $this->propertyAccessor->getValue($body, $this->options['token_key']);
+
+            try {
+                $expiresIn = $this->propertyAccessor->getValue($body, $this->options['expire_key']);
+            } catch (NoSuchPropertyException $e) {
+                $expiresIn = null;
+            }
+        } else {
+            // no property accessor means that token is in plain text format
+            $tokenValue = $response->getBody()->getContents();
             $expiresIn = null;
         }
 
