@@ -214,6 +214,47 @@ EOF;
         $this->assertEquals('1453720507', $token->getToken());
     }
 
+    public function testGetTokenWithNullPropertyAccessor()
+    {
+        $mockHandler = new MockHandler([
+            function (RequestInterface $request) {
+
+                $this->assertTrue($request->hasHeader('timeout'));
+                $this->assertEquals(
+                    3,
+                    $request->getHeaderLine('timeout')
+                );
+
+                return new Response(
+                    200,
+                    ['Content-Type' => 'text/plain'],
+                    '1453720507' // plain text !
+                );
+            },
+        ]);
+
+        $handler = HandlerStack::create($mockHandler);
+
+        $authClient = new Client([
+            'handler' => $handler,
+        ]);
+
+        $authStrategy = new QueryAuthStrategy(['username' => 'admin', 'password' => 'admin']);
+
+        $jwtManager = new JwtManager(
+            $authClient,
+            $authStrategy,
+            null,
+            ['token_url' => '/api/token', 'timeout' => 3] // no (useless) 'token_key' option
+        );
+        $jwtManager->setPropertyAccessor(null);
+
+        $token = $jwtManager->getJwtToken();
+
+        $this->assertInstanceOf(JwtToken::class, $token);
+        $this->assertEquals('1453720507', $token->getToken());
+    }
+
     public function testGetTokenShouldGetNewTokenIfCachedTokenIsNotValid()
     {
         $mockHandler = new MockHandler(
