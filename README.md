@@ -273,6 +273,26 @@ $jwtManager = new JwtManager(
 );
 ```
 
+### Null property accessor
+
+If the response is not in json format (i.e. the response body contains only the token in plain text format), you need 
+to set the property accessor to `null`:
+
+```php
+//Create the JwtManager
+$jwtManager = new JwtManager(
+    $authClient,
+    $authStrategy,
+    $persistenceStrategy,
+    [
+        'token_url' => '/api/token',
+    ]
+);
+//Set property accessor to `null`
+$jwtManager->setPropertyAccessor(null);
+```
+
+
 ## Authorization Header Type
 
 Some endpoints use different Authorization header types (Bearer, JWT, etc...).
